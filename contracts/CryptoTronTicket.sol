@@ -45,7 +45,7 @@ import "./Base64.sol";
 error NoAnOwner();
 error NotALottery();
 
-contract CryptotronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
+contract CryptoTronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
 
     enum lotteryState {
         PENDING,
@@ -281,7 +281,7 @@ contract CryptotronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
                     '"image": "', getImage(tokenId), '",',
                     '"attributes": [{"trait_type": "Chance", "value": "1 to 25" },',
                     '{"trait_type": "Prize", "value": "0.1 ETH" },',
-                    '{"trait_type": "Project", "value": "Cryptotron" },',
+                    '{"trait_type": "Project", "value": "CryptoTron" },',
                     '{"trait_type": "Draw State", "value": "', getDrawState(tokenId), '" },',
                     '{"trait_type": "Draw Date", "value": "', getDrawDate(), '" }',
                     '],'
@@ -291,7 +291,7 @@ contract CryptotronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
                         'Hold this ticket at the draw date and have a chance to win the prize',
                         '\\n','\\n',
                         'When the lottery is active, no one can modify or interrupt the process',
-                        '\\n',
+                        '\\n','\\n',
                         'You don', unicode"’" ,'t need to trust us because the lottery is protected by the math',
                         '\\n','\\n',
                         'Lottery contract address - ', getLotteryContractAddress(), ' (Polygon)',

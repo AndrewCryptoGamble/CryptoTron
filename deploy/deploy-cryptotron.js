@@ -37,7 +37,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         networkConfig[chainId]["callbackGasLimit"],
         vrfCoordinatorV2Address,
     ]
-    const CryptotronLottery = await deploy("CryptotronLottery", {
+    const CryptoTronLottery = await deploy("CryptoTronLottery", {
         from: deployer,
         args: arguments,
         log: true,
@@ -47,15 +47,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // VRFCoordinatorV2Mock contract consumer approval
     if (developmentChains.includes(network.name)) {
         const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
-        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, CryptotronLottery.address)
+        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, CryptoTronLottery.address)
     }
 
     // Verify
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY && process.env.POLYGONSCAN_API_KEY) {
         log("Verifying...")
-        await verify(CryptotronLottery.address, arguments)
+        await verify(CryptoTronLottery.address, arguments)
     }
 
 }
 
-module.exports.tags = ["all", "CryptotronLottery"]
+module.exports.tags = ["all", "CryptoTronLottery"]

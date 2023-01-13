@@ -38,7 +38,7 @@ import "hardhat/console.sol";
 * @dev interface of NFT smart contract (aka the Ticket), that provides functionality 
 * @dev for entering the draw and setting the states for both contracts.
 */
-interface CryptotronTicketInterface {
+interface CryptoTronTicketInterface {
     /**
     * @dev returns the owner address of a specific token.
     */
@@ -152,7 +152,9 @@ interface IERC20 {
 */
 error UpkeepError(uint256 currentBalance, uint256 numPlayers, bool isDrawProcessActive);
 error TransactionError();
-error RefundError();
+error RefundConditionsError();
+error RefundTransferError();
+error FundingERC20Error();
 error OwnershipError();
 error FailStatusError();
 error ActiveStatusError();
@@ -161,7 +163,7 @@ error ActiveStatusError();
 * @title Cryptotron Lottery project 
 */
 
-contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
+contract CryptoTronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     /**
     * @dev Variables.
@@ -296,13 +298,13 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         if (!upkeepNeeded) {
             revert UpkeepError(
                 IERC20(rewardTokenAddress).balanceOf(address(this)),
-                CryptotronTicketInterface(nftAddress).getSoldTicketsCount(),
+                CryptoTronTicketInterface(nftAddress).getSoldTicketsCount(),
                 isDrawProcessActive
             );
         }
 
         isDrawProcessActive = true;
-        CryptotronTicketInterface(nftAddress).setStateProcessing();
+        CryptoTronTicketInterface(nftAddress).setStateProcessing();
         
         uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
@@ -325,7 +327,7 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     ) public view override returns (bool upkeepNeeded, bytes memory) {
         IERC20 token = IERC20(rewardTokenAddress);
         bool timePassed = block.timestamp > minDrawDate;
-        bool hasPlayers = CryptotronTicketInterface(nftAddress).getSoldTicketsCount() > 0;
+        bool hasPlayers = CryptoTronTicketInterface(nftAddress).getSoldTicketsCount() > 0;
         bool hasBalance = token.balanceOf(address(this)) > 0;
         bool hasGasCoin = address(this).balance > 0;
         upkeepNeeded = (isLotteryActive && !isDrawProcessActive && timePassed && hasPlayers && hasBalance && hasGasCoin);
@@ -344,7 +346,7 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
             rewardTokenAddress = newRewardTokenAddress;
             minDrawDate = newDrawDate;
 
-            CryptotronTicketInterface cti = CryptotronTicketInterface(nftAddress);
+            CryptoTronTicketInterface cti = CryptoTronTicketInterface(nftAddress);
             cti.setDrawDate(minDrawDate);
             cti.setStateOpen();
 
@@ -363,16 +365,19 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     */
     function refund() public ifActive {
         if (block.timestamp < minDrawDate + ONE_DAY_IN_SEC && isDrawFailed == false) {
-            revert RefundError();
+            revert RefundConditionsError();
         }
 
-        CryptotronTicketInterface cti = CryptotronTicketInterface(nftAddress);
+        CryptoTronTicketInterface cti = CryptoTronTicketInterface(nftAddress);
         IERC20 token = IERC20(rewardTokenAddress);
         uint256 amount = token.balanceOf(address(this)) / cti.getSoldTicketsCount();
 
         for (uint256 tokenId = 1; tokenId < cti.getSoldTicketsCount() + 1; tokenId++) {
             address recipient = payable(cti.ownerOf(tokenId));
-            token.transfer(recipient, amount);
+            (bool success) = token.transfer(recipient, amount);
+            if (!success) {
+                revert RefundTransferError();
+            }
             emit RefundedTo(recipient);
         }
 
@@ -401,7 +406,10 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     function fundRewardToken(uint256 _amount) public {
         IERC20 token = IERC20(rewardTokenAddress);
         require(_amount > 0, "");
-        token.transferFrom(msg.sender, address(this), _amount);
+        (bool success) = token.transferFrom(msg.sender, address(this), _amount);
+        if (!success) {
+            revert FundingERC20Error();
+        }
         emit TokensLanded(msg.sender, _amount);
     }
 
@@ -420,7 +428,7 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
         uint256, 
         uint256[] memory randomWords
     ) internal override ifActive ifNotFailed {
-        CryptotronTicketInterface cti = CryptotronTicketInterface(nftAddress);
+        CryptoTronTicketInterface cti = CryptoTronTicketInterface(nftAddress);
         
         uint256 indexOfWinner = randomWords[0] % cti.getSoldTicketsCount() + 1; // tickets id's count starts from 1
         uint256 winnerId = indexOfWinner;
@@ -460,7 +468,7 @@ contract CryptotronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     * @notice if you don't get your address via this function, please contact us.
     */
     function getParticipants() public view returns (address[] memory) {
-        CryptotronTicketInterface cti = CryptotronTicketInterface(nftAddress);
+        CryptoTronTicketInterface cti = CryptoTronTicketInterface(nftAddress);
 
         address[] memory participants = new address[](cti.getSoldTicketsCount());
         for (uint256 tokenId = 1; tokenId < cti.getSoldTicketsCount() + 1; tokenId++) {

@@ -39,8 +39,8 @@ const networkConfig = {
 
 const developmentChains = ["hardhat", "localhost"]
 const VERIFICATION_BLOCK_CONFIRMATIONS = 6
-const frontEndContractsFile = "../nextjs-Cryptotron/constants/contractAddresses.json"
-const frontEndAbiFile = "../nextjs-Cryptotron/constants/abi.json"
+const frontEndContractsFile = "../reactTs-Cryptotron/constants/contractAddresses.json"
+const frontEndAbiFile = "../reactTs-Cryptotron/constants/abi.json"
 
 module.exports = {
     networkConfig,
