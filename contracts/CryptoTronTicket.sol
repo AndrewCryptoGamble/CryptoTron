@@ -1,8 +1,5 @@
 // SPDX-License-Identifier: MIT
 
-/// @custom:created-with-openzeppelin-wizard https://wizard.openzeppelin.com
-
-
 /*
                         ::                                                      
                      .JG&#~                                                     
@@ -286,7 +283,7 @@ contract CryptoTronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
                     '{"trait_type": "Draw Date", "value": "', getDrawDate(), '" }',
                     '],'
                     '"description": ',
-                        '"Cryptotron lottery is a fully smart-contract-based raffle that uses Chainlink oracle network for provably fair random numbers',
+                        '"CryptoTron lottery is a fully smart-contract-based raffle that uses Chainlink oracle network for provably fair random numbers',
                         '\\n','\\n',
                         'Hold this ticket at the draw date and have a chance to win the prize',
                         '\\n','\\n',
@@ -304,7 +301,7 @@ contract CryptoTronTicket is ERC721, ERC721Enumerable, ERC721Burnable {
     }
 
     /**
-    * Hook, which is being used for implementing IERC721Receiver.
+    * @dev see IERC721Receiver.
     */
     function _beforeTokenTransfer(
         address from, 

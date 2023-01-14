@@ -160,7 +160,7 @@ error FailStatusError();
 error ActiveStatusError();
 
 /**
-* @title Cryptotron Lottery project 
+* @title CryptoTron Lottery project 
 */
 
 contract CryptoTronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
@@ -356,7 +356,7 @@ contract CryptoTronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /**
-    * @dev This fuction is for refunding purchased tickets to Cryptotron
+    * @dev This fuction is for refunding purchased tickets to CryptoTron
     * @dev Function is public, so everyone can call it.
     * @dev Keeps track of callers of this function.
     * 
@@ -386,22 +386,22 @@ contract CryptoTronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /**
-    * @dev This function was made just for funding the Cryptotron for providing
+    * @dev This function was made just for funding the CryptoTron for providing
     * @dev transactions (service) on current network with it's native currency.
     *
-    * @notice Do not use this function to enter the Cryptotron.
+    * @notice Do not use this function to enter the CryptoTron.
     */
     function fundNativeCoin() public payable {
         emit NativeCoinFunded(msg.sender);
     }
 
     /**
-    * @dev This function was made just for funding the Cryptotron.
+    * @dev This function was made just for funding the CryptoTron.
     *
     * @notice You can increase lottery winnings. But it is not changing
     * @notice youre chances for the win. We are storing your address for future. :)
     *
-    * @notice Do not use this function to enter the Cryptotron.
+    * @notice Do not use this function to enter the CryptoTron.
     */
     function fundRewardToken(uint256 _amount) public {
         IERC20 token = IERC20(rewardTokenAddress);
@@ -478,18 +478,18 @@ contract CryptoTronLottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /**
-    * @dev Returns the balance of the Cryptotron contract (Native).
+    * @dev Returns the balance of the CryptoTron contract (Native).
     * 
-    * @notice This funds are the "Native currency" of the Cryptotron.
+    * @notice This funds are the "Native currency" of the CryptoTron.
     */
     function getNativeBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
     /**
-    * @dev Returns the balance of the Cryptotron contract (winnings).
+    * @dev Returns the balance of the CryptoTron contract (winnings).
     * 
-    * @notice This funds are the "Winnings" of the Cryptotron.
+    * @notice This funds are the "Winnings" of the CryptoTron.
     */
     function getRewardAmount() public view returns (uint256) {
         IERC20 token = IERC20(rewardTokenAddress);
